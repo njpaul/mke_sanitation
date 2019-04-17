@@ -42,7 +42,3 @@ def get_collection_date(coll_type_str, addr_str):
 
 def _get_collection_date_impl(coll_type, addr_parts):
     pass
-
-
-def _parse_collection_type(text):
-    return
