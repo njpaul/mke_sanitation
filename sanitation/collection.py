@@ -1,5 +1,7 @@
+import re
+from datetime import date, datetime
 from .addr import *
-from .util import case_insensitive_lookup
+from .util import case_insensitive_lookup, strip_html_tags
 
 
 class UnknownCollectionType(Exception):
@@ -55,44 +57,85 @@ def get_collection_date(coll_type_str, addr_str):
     return None
 
 
-# Returns a CollectionDate on success
-# Raises UnknownResponse if the response cannot be interpreted
-def _read_garbage_date(response_text):
-    return None
-    
+# TODO: Remove the duplication of the next two functions
 
-# Returns a CollectionDate on success
-# Raises UnknownResponse if the response cannot be interpreted
+# Returns a datetime.date on success
+# Raises UnknownCollectionDate if the garbage date could not be determined
+# Raises CollectionResponseError if the response cannot be interpreted
+def _read_garbage_date(response_text):
+    text = strip_html_tags(response_text)
+    garbage_day = _match_garbage_day(text)
+    if garbage_day is None:
+        if _match_garbage_day_undetermined(text):
+            raise UnknownCollectionDate
+        else:
+            raise CollectionResponseError
+    return garbage_day
+
+
+# Returns a datetime.date on success
+# Raises UnknownCollectionDate if the recycling date could not be determined
+# Raises CollectionResponseError if the response cannot be interpreted
 def _read_recycling_date(response_text):
-    return None
+    text = strip_html_tags(response_text)
+    recycling_day = _match_recycling_day(text)
+    if recycling_day is None:
+        if _match_recycling_day_undetermined(text):
+            raise UnknownCollectionDate
+        else:
+            raise CollectionResponseError
+    return recycling_day
 
 
 # Try to find the garbage day by matching known text.
 # Returns a datetime.date if the garbage day is found, otherwise None
 def _match_garbage_day(text):
-    pass
+    prog = re.compile(r"The next garbage collection pickup for this location "
+                      r"is: \w+ (\w+) (\d+), (\d+)")
+    match = prog.search(text)
+    if match is None:
+        return None
+
+    date_str = "{} {:0>2} {}".format(*match.groups())
+    try:
+        # TODO: Might run into a locale bug here. Better to set locale
+        # explicitly to en_US. Should add a test for this.
+        return datetime.strptime(date_str, "%B %d %Y").date()
+    except ValueError:
+        return None
+
 
 # Try to see if the garbage day could not be determined by matching known text.
 # Returns True if garbage day could not be determined, False otherwise
-
-
 def _match_garbage_day_undetermined(text):
-    pass
+    return text.find("Your garbage collection schedule could not be determined") != -1
+
 
 # Try to find the recycling day by matching known text.
 # Returns a datetime.date if the recycling day is found, otherwise None
-
-
 def _match_recycling_day(text):
-    pass
+    # TODO: Remove duplication with garbage day
+    prog = re.compile(r"The next recycling collection pickup for this location "
+                      r"is: \w+ (\w+) (\d+), (\d+)")
+    match = prog.search(text)
+    if match is None:
+        return None
+
+    date_str = "{} {:0>2} {}".format(*match.groups())
+    try:
+        # TODO: Might run into a locale bug here. Better to set locale
+        # explicitly to en_US. Should add a test for this.
+        return datetime.strptime(date_str, "%B %d %Y").date()
+    except ValueError:
+        return None
+
 
 # Try to see if the recycling day could not be determined.
 # Currently there is no text returned that describes the inability to
 # determine the recycling date, so we can't determine this directly.
 # We can, however, sense it through the garbage date, which will return
-# undetermined in this case as well.
+# undetermined in this case as well. This assumes that we will never be
+# able to find one date without also finding the other.
 # Returns True if recycling day could not be determined, False otherwise
-
-
 def _match_recycling_day_undetermined(text):
-    pass
+    return _match_garbage_day_undetermined(text)

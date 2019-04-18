@@ -56,11 +56,51 @@ class TestReadResponse(unittest.TestCase):
 
         with self.subTest(coll_type="garbage"):
             date_response = _read_garbage_date(RESPONSE_TEXT)
-            self.assertEqual(date_response, date(2019, 4, 12))
+            self.assertEqual(date_response, date(2019, 4, 17))
 
         with self.subTest(coll_type="recycling"):
             date_response = _read_recycling_date(RESPONSE_TEXT)
             self.assertEqual(date_response, date(2019, 4, 12))
+
+    def test_returns_date_when_day_is_single_digit(self):
+        # A small but representative version of the response to expect.
+        # The real version has much more, and it varies, so that can be
+        # checked with end-to-end testing.
+        RESPONSE_TEXT = (
+            "<strong>NG3-2C</strong>.<br/><br/>The next garbage collection "
+            "pickup for this location is: <strong>WEDNESDAY MAY 1, 2019</strong>"
+            "<h2>Next Scheduled Recycling Pickup:</h2>"
+            "<strong>NR01-1-01</strong>.<br/><br/>The next recycling collection "
+            "pickup for this location is: <strong>MONDAY MAY 6, 2019</strong>"
+        )
+
+        with self.subTest(coll_type="garbage"):
+            date_response = _read_garbage_date(RESPONSE_TEXT)
+            self.assertEqual(date_response, date(2019, 5, 1))
+
+        with self.subTest(coll_type="recycling"):
+            date_response = _read_recycling_date(RESPONSE_TEXT)
+            self.assertEqual(date_response, date(2019, 5, 6))
+
+    def test_returns_date_when_month_starts_with_capital_letter(self):
+        # A small but representative version of the response to expect.
+        # The real version has much more, and it varies, so that can be
+        # checked with end-to-end testing.
+        RESPONSE_TEXT = (
+            "<strong>NG3-2C</strong>.<br/><br/>The next garbage collection "
+            "pickup for this location is: <strong>WEDNESDAY May 1, 2019</strong>"
+            "<h2>Next Scheduled Recycling Pickup:</h2>"
+            "<strong>NR01-1-01</strong>.<br/><br/>The next recycling collection "
+            "pickup for this location is: <strong>MONDAY May 6, 2019</strong>"
+        )
+
+        with self.subTest(coll_type="garbage"):
+            date_response = _read_garbage_date(RESPONSE_TEXT)
+            self.assertEqual(date_response, date(2019, 5, 1))
+
+        with self.subTest(coll_type="recycling"):
+            date_response = _read_recycling_date(RESPONSE_TEXT)
+            self.assertEqual(date_response, date(2019, 5, 6))
 
     def test_raises_UnknownCollectionDate_when_not_found_in_text(self):
         # A small but representative version of the response to expect.
