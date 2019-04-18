@@ -1,7 +1,7 @@
 import unittest
 from datetime import date
 from .collection import *
-from .collection import _parse_response_text
+from .collection import _read_garbage_date, _read_recycling_date
 
 
 class TestCollectionType(unittest.TestCase):
@@ -31,7 +31,7 @@ class TestCollectionType(unittest.TestCase):
                 CollectionType.from_text(text)
 
 
-class TestParseResponseText(unittest.TestCase):
+class TestReadResponse(unittest.TestCase):
     def test_returns_date_when_found_in_text(self):
         # A small but representative version of the response to expect.
         # The real version has much more, and it varies, so that can be
@@ -54,15 +54,13 @@ class TestParseResponseText(unittest.TestCase):
             "schedule.<br/><br/>"
         )
 
-        with self.subTest(coll_type=CollectionType.GARBAGE):
-            date_response = _parse_response_text(
-                RESPONSE_TEXT, CollectionType.GARBAGE)
-            self.assertEquals(date_response, date(2019, 4, 12))
+        with self.subTest(coll_type="garbage"):
+            date_response = _read_garbage_date(RESPONSE_TEXT)
+            self.assertEqual(date_response, date(2019, 4, 12))
 
-        with self.subTest(coll_type=CollectionType.RECYCLING):
-            date_response = _parse_response_text(
-                RESPONSE_TEXT, CollectionType.RECYCLING)
-            self.assertEquals(date_response, date(2019, 4, 12))
+        with self.subTest(coll_type="recycling"):
+            date_response = _read_recycling_date(RESPONSE_TEXT)
+            self.assertEqual(date_response, date(2019, 4, 12))
 
     def test_raises_UnknownCollectionDate_when_not_found_in_text(self):
         # A small but representative version of the response to expect.
@@ -74,11 +72,11 @@ class TestParseResponseText(unittest.TestCase):
             "<h2>Clean & Green week:</h2>"
         )
 
-        with self.subTest(coll_type=CollectionType.GARBAGE), self.assertRaises(UnknownCollectionDate):
-            _parse_response_text(RESPONSE_TEXT, CollectionType.GARBAGE)
+        with self.subTest(coll_type="garbage"), self.assertRaises(UnknownCollectionDate):
+            _read_garbage_date(RESPONSE_TEXT)
 
-        with self.subTest(coll_type=CollectionType.RECYCLING), self.assertRaises(UnknownCollectionDate):
-            _parse_response_text(RESPONSE_TEXT, CollectionType.RECYCLING)
+        with self.subTest(coll_type="recycling"), self.assertRaises(UnknownCollectionDate):
+            _read_recycling_date(RESPONSE_TEXT)
 
     def test_raises_CollectionResponseError_when_response_is_not_recognized(self):
         RESPONSE_TEXT = (
@@ -91,8 +89,8 @@ class TestParseResponseText(unittest.TestCase):
             "as a valid Milwaukee address..<br/>"
         )
 
-        with self.subTest(coll_type=CollectionType.GARBAGE), self.assertRaises(CollectionResponseError):
-            _parse_response_text(RESPONSE_TEXT, CollectionType.GARBAGE)
+        with self.subTest(coll_type="garbage"), self.assertRaises(CollectionResponseError):
+            _read_garbage_date(RESPONSE_TEXT)
 
-        with self.subTest(coll_type=CollectionType.RECYCLING), self.assertRaises(CollectionResponseError):
-            _parse_response_text(RESPONSE_TEXT, CollectionType.RECYCLING)
+        with self.subTest(coll_type="recycling"), self.assertRaises(CollectionResponseError):
+            _read_recycling_date(RESPONSE_TEXT)
