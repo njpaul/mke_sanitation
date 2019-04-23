@@ -30,7 +30,7 @@ class TestCollDateToSpeech(unittest.TestCase):
         speech = convert_collection_date_to_speech(now, coll_date)
         self.assertEqual(
             speech,
-            'Monday, <say-as interpret-as="date" format="md">4/29</say-as>'
+            'Monday, <say-as interpret-as="date" format="md">04/29</say-as>'
         )
 
     def test_returns_day_and_month_when_month_changes(self):
@@ -39,7 +39,7 @@ class TestCollDateToSpeech(unittest.TestCase):
         speech = convert_collection_date_to_speech(now, coll_date)
         self.assertEqual(
             speech,
-            'Wednesday, <say-as interpret-as="date" format="md">5/1</say-as>'
+            'Wednesday, <say-as interpret-as="date" format="md">05/01</say-as>'
         )
 
     def test_returns_tomorrow_day_and_month_when_1_day_away_and_month_changes(self):
@@ -48,7 +48,7 @@ class TestCollDateToSpeech(unittest.TestCase):
         speech = convert_collection_date_to_speech(now, coll_date)
         self.assertEqual(
             speech,
-            'tomorrow, Wednesday, <say-as interpret-as="date" format="md">5/1</say-as>'
+            'tomorrow, Wednesday, <say-as interpret-as="date" format="md">05/01</say-as>'
         )
 
     def test_returns_day_month_year_when_year_changes(self):
@@ -57,7 +57,7 @@ class TestCollDateToSpeech(unittest.TestCase):
         speech = convert_collection_date_to_speech(now, coll_date)
         self.assertEqual(
             speech,
-            'Wednesday, <say-as interpret-as="date" format="mdy">1/1/2020</say-as>'
+            'Wednesday, <say-as interpret-as="date" format="mdy">01/01/2020</say-as>'
         )
 
     def test_returns_tomorrow_day_month_year_when_year_changes(self):
@@ -66,7 +66,7 @@ class TestCollDateToSpeech(unittest.TestCase):
         speech = convert_collection_date_to_speech(now, coll_date)
         self.assertEqual(
             speech,
-            'tomorrow, Wednesday, <say-as interpret-as="date" format="mdy">1/1/2020</say-as>'
+            'tomorrow, Wednesday, <say-as interpret-as="date" format="mdy">01/01/2020</say-as>'
         )
 
     def test_raises_UnknownCollectionDate_when_in_past(self):

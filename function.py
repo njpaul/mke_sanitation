@@ -10,14 +10,40 @@ import sanitation
 # away or the month changes, speak the day and the month. If the year
 # changes, speak the day, month, and year. If it's only one day away,
 # say "tomorrow" instead of the name of the day. If collection date
-# is today, alawys return "today".
+# is today, alawys return "today". All numbers are zero-padded.
 # Raises UnknownCollectionDate if coll_date is in the past
 def convert_collection_date_to_speech(now, coll_date):
-    days_until_coll_date = (coll_date - now).days
-    if days_until_coll_date >= 7:
-        pass
+    days_until = (coll_date - now).days
+
+    # TODO: This nasty block needs some refactoring
+    if days_until < 0:
+        raise sanitation.UnknownCollectionDate()
+    elif days_until == 0:
+        return "today"
+    elif days_until == 1:
+        if now.month == coll_date.month:
+            return "tomorrow"
+        elif now.year == coll_date.year:
+            return 'tomorrow, {}, <say-as interpret-as="date" format="md">{}</say-as>'.format(
+                coll_date.strftime("%A"), coll_date.strftime("%m/%d"))
+        else:
+            return 'tomorrow, {}, <say-as interpret-as="date" format="mdy">{}</say-as>'.format(
+                coll_date.strftime("%A"), coll_date.strftime("%m/%d/%Y"))
+    elif days_until < 7:
+        if now.month == coll_date.month:
+            return coll_date.strftime("%A")
+        elif now.year == coll_date.year:
+            return '{}, <say-as interpret-as="date" format="md">{}</say-as>'.format(
+                coll_date.strftime("%A"), coll_date.strftime("%m/%d"))
+        else:
+            return '{}, <say-as interpret-as="date" format="mdy">{}</say-as>'.format(
+                coll_date.strftime("%A"), coll_date.strftime("%m/%d/%Y"))
+    elif now.year != coll_date.year:
+        return '{}, <say-as interpret-as="date" format="mdy">{}</say-as>'.format(
+            coll_date.strftime("%A"), coll_date.strftime("%m/%d/%Y"))
     else:
-        pass
+        return '{}, <say-as interpret-as="date" format="md">{}</say-as>'.format(
+            coll_date.strftime("%A"), coll_date.strftime("%m/%d"))
 
 
 def create_skill_builder():
