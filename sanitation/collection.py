@@ -35,13 +35,6 @@ class CollectionType:
             raise UnknownCollectionType from ex
 
 
-class CollectionDate:
-    def __init__(self, coll_type, addr_parts, coll_date):
-        self.coll_type = coll_type
-        self.addr_parts = addr_parts
-        self.coll_date = coll_date
-
-
 # Returns datetime.date on success
 # Raises UnknownCollectionType if the collection type cannot be interpreted
 # Raises AddrError if the address cannot be interpreted
