@@ -6,6 +6,8 @@ from sanitation import UnknownCollectionDate
 
 class TestCollDateToSpeech(unittest.TestCase):
 
+    # TODO: Could do some more exhaustive testing here, making sure that
+    # all cases could be hit
     def test_returns_today(self):
         now = date(2019, 4, 22)
         coll_date = date(2019, 4, 22)
