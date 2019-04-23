@@ -3,37 +3,55 @@ from ask_sdk_core.utils import is_intent_name, is_request_type
 from ask_sdk_core.utils.request_util import get_slot_value
 import sanitation
 
-sb = SkillBuilder()
+
+# Returns an SSML representation of the collection date, given the current
+# date and the collection date. If the date is less than 7 days away and
+# within the same month, just speak the day. If the date is at least 7 days
+# away or the month changes, speak the day and the month. If the year
+# changes, speak the day, month, and year. If it's only one day away,
+# say "tomorrow" instead of the name of the day. If collection date
+# is today, alawys return "today".
+# Raises UnknownCollectionDate if coll_date is in the past
+def convert_collection_date_to_speech(now, coll_date):
+    days_until_coll_date = (coll_date - now).days
+    if days_until_coll_date >= 7:
+        pass
+    else:
+        pass
 
 
-@sb.request_handler(is_request_type("LaunchRequest"))
-def launch_request_handler(handler_input):
-    speech = "Welcome to Milwaukee Sanitation. Ask me when your garbage or recycling day is."
-    handler_input.response_builder.speak(speech).set_should_end_session(False)
-    return handler_input.response_builder.response
+def create_skill_builder():
+    sb = SkillBuilder()
+
+    @sb.request_handler(is_request_type("LaunchRequest"))
+    def launch_request_handler(handler_input):
+        speech = "Welcome to Milwaukee Sanitation. Ask me when your garbage or recycling day is."
+        handler_input.response_builder.speak(
+            speech).set_should_end_session(False)
+        return handler_input.response_builder.response
+
+    @sb.request_handler(is_intent_name("GetCollectionDate"))
+    def get_collection_date_handler(handler_input):
+        coll_type = get_slot_value(handler_input, "collectionType")
+        coll_addr = get_slot_value(handler_input, "collectionAddress")
+        date = sanitation.get_collection_date(coll_type, coll_addr)
+        handler_input.response_builder.speak(date).set_should_end_session(True)
+        return handler_input.response_builder.response
+
+    @sb.request_handler(is_request_type("SessionEndedRequest"))
+    def session_ended_handler(handler_input):
+        return handler_input.response_builder.response
+
+    @sb.exception_handler(lambda i, e: True)
+    def catch_all_exception_handler(handler_input, ex):
+        print(ex)
+
+        speech = "Sorry, I didn't understand that. Can you say it again?"
+        handler_input.response_builder.speak(speech).ask(speech)
+        return handler_input.response_builder.response
+
+    return sb
 
 
-@sb.request_handler(is_intent_name("GetCollectionDate"))
-def get_collection_date_handler(handler_input):
-    coll_type = get_slot_value(handler_input, "collectionType")
-    coll_addr = get_slot_value(handler_input, "collectionAddress")
-    date = sanitation.get_collection_date(coll_type, coll_addr)
-    handler_input.response_builder.speak(date).set_should_end_session(True)
-    return handler_input.response_builder.response
-
-
-@sb.request_handler(is_request_type("SessionEndedRequest"))
-def session_ended_handler(handler_input):
-    return handler_input.response_builder.response
-
-
-@sb.exception_handler(lambda i, e: True)
-def catch_all_exception_handler(handler_input, ex):
-    print(ex)
-
-    speech = "Sorry, I didn't understand that. Can you say it again?"
-    handler_input.response_builder.speak(speech).ask(speech)
-    return handler_input.response_builder.response
-
-
+sb = create_skill_builder()
 handler = sb.lambda_handler()
