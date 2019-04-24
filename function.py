@@ -1,6 +1,7 @@
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.utils import is_intent_name, is_request_type
 from ask_sdk_core.utils.request_util import get_slot_value
+from datetime import date
 import sanitation
 
 
@@ -45,8 +46,15 @@ def create_skill_builder():
     def get_collection_date_handler(handler_input):
         coll_type = get_slot_value(handler_input, "collectionType")
         coll_addr = get_slot_value(handler_input, "collectionAddress")
-        date = sanitation.get_collection_date(coll_type, coll_addr)
-        handler_input.response_builder.speak(date).set_should_end_session(True)
+
+        # TODO: Handle exceptions with additional dialog. For now, let the
+        # exception handler do the work.
+        now = date.today()  # TODO: Subject to locale problems
+        coll_date = sanitation.get_collection_date(coll_type, coll_addr)
+        speech = 'The next {} date at <say-as interpret-as="address">{}</say-as> is {}'.format(
+            coll_type, convert_collection_date_to_speech(now, coll_date))
+        handler_input.response_builder.speak(
+            speech).set_should_end_session(True)
         return handler_input.response_builder.response
 
     @sb.request_handler(is_request_type("SessionEndedRequest"))
