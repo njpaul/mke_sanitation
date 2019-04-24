@@ -99,7 +99,7 @@ def _parse_street_num(text):
 
 
 def _parse_street_name(parts):
-    st_name = " ".join(parts)
+    st_name = " ".join(parts).upper()
     if not st_name:
         raise AddrError
     return st_name

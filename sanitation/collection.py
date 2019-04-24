@@ -1,4 +1,5 @@
 import re
+import requests
 from datetime import date, datetime
 from .addr import *
 from .util import case_insensitive_lookup, strip_html_tags
@@ -43,18 +44,40 @@ class CollectionType:
 def get_collection_date(coll_type_str, addr_str):
     coll_type = CollectionType.from_text(coll_type_str)
     addr_parts = AddrParts.from_text(addr_str)
-    # Make request and get response
-    # response_text = ...
-    # coll_date = _parse_response_text(response_text, coll_type)
-    # return _get_collection_date_impl(coll_type, addr_parts)
-    return None
 
+    try:
+        response_text = _make_request(addr_parts)
+    except requests.exceptions.HTTPError as ex:
+        raise CollectionResponseError from ex
+    print(response_text)
+    if coll_type == CollectionType.GARBAGE:
+        return _read_garbage_date(response_text)
+    else:
+        return _read_recycling_date(response_text)
+
+
+def _make_request(addr):
+    URL = "https://itmdapps.milwaukee.gov/DPWServletsPublic/garbage_day"
+    PARAMS = {"embed": "Y"}
+    data = {
+        "laddr": addr.st_num,
+        "sdir": addr.st_dir,
+        "sname": addr.st_name,
+        "stype": addr.st_suffix,
+        "embed": "Y",
+        "Submit": "Submit"
+    }
+    resp = requests.post(URL, params=PARAMS, data=data)
+    resp.raise_for_status()
+    return resp.text
 
 # TODO: Remove the duplication of the next two functions
 
 # Returns a datetime.date on success
 # Raises UnknownCollectionDate if the garbage date could not be determined
 # Raises CollectionResponseError if the response cannot be interpreted
+
+
 def _read_garbage_date(response_text):
     text = strip_html_tags(response_text)
     garbage_day = _match_garbage_day(text)

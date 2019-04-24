@@ -57,9 +57,10 @@ class TestAddrParts(unittest.TestCase):
 
     def test_st_name_is_valid(self):
         addrs = [
-            ("1234 N Fake Street", "Fake"),
-            ("1234 North Blah Blorg Street", "Blah Blorg"),
-            ("1234 S Fake Terrace Ave", "Fake Terrace"),
+            ("1234 N Fake Street", "FAKE"),
+            ("1234 North Blah Blorg Street", "BLAH BLORG"),
+            ("1234 S Fake Terrace Ave", "FAKE TERRACE"),
+            ("1234 North 51st Street", "51ST"),
         ]
 
         for addr, exp in addrs:
