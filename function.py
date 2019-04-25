@@ -47,12 +47,14 @@ def create_skill_builder():
         coll_type = get_slot_value(handler_input, "collectionType")
         coll_addr = get_slot_value(handler_input, "collectionAddress")
 
+        print(coll_addr)
+
         # TODO: Handle exceptions with additional dialog. For now, let the
         # exception handler do the work.
         now = date.today()  # TODO: Subject to locale problems
         coll_date = sanitation.get_collection_date(coll_type, coll_addr)
-        speech = 'The next {} date at <say-as interpret-as="address">{}</say-as> is {}'.format(
-            coll_type, convert_collection_date_to_speech(now, coll_date))
+        speech = 'The next {} day at <say-as interpret-as="address">{}</say-as> is {}'.format(
+            coll_type, coll_addr, convert_collection_date_to_speech(now, coll_date))
         handler_input.response_builder.speak(
             speech).set_should_end_session(True)
         return handler_input.response_builder.response
