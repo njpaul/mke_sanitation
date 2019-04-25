@@ -102,4 +102,42 @@ def _parse_street_name(parts):
     st_name = " ".join(parts).upper()
     if not st_name:
         raise AddrError
+
+    # Alexa doesn't always hear the suffix of a numbered street, so
+    # we'll try to correct that here.
+    try:
+        suffix = _get_num_suffix(st_name)
+        st_name += suffix
+    except ValueError:
+        # Not a number, just return what we heard
+        pass
+
     return st_name
+
+
+# Returns the uppercase suffix of a number, how it would be spoken.
+# Raises ValueError if 'num' is not a number
+def _get_num_suffix(num):
+    num = int(num)
+
+    # Although we should only have to deal with 10s and 100s street names,
+    # we this is generic across all numbers by reducing to a value in the
+    # <= 100 range.
+    while num > 100:
+        num -= 100
+
+    if 11 <= num <= 19:
+        suffix = "TH"
+    else:
+        # All other numbers are based off the last digit.
+        num %= 10
+        if num == 1:
+            suffix = "ST"
+        elif num == 2:
+            suffix = "ND"
+        elif num == 3:
+            suffix = "RD"
+        else:
+            suffix = "TH"
+
+    return suffix
