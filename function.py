@@ -43,7 +43,7 @@ def create_skill_builder():
         return handler_input.response_builder.response
 
     @sb.request_handler(is_intent_name("GetCollectionDateAtAddress"))
-    def get_collection_date_handler(handler_input):
+    def get_collection_date_at_address_handler(handler_input):
         coll_type = get_slot_value(handler_input, "collectionType")
         coll_addr = get_slot_value(handler_input, "collectionAddress")
 
