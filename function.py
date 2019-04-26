@@ -42,7 +42,7 @@ def create_skill_builder():
             speech).set_should_end_session(False)
         return handler_input.response_builder.response
 
-    @sb.request_handler(is_intent_name("GetCollectionDate"))
+    @sb.request_handler(is_intent_name("GetCollectionDateAtAddress"))
     def get_collection_date_handler(handler_input):
         coll_type = get_slot_value(handler_input, "collectionType")
         coll_addr = get_slot_value(handler_input, "collectionAddress")
