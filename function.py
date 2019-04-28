@@ -22,6 +22,12 @@ HELP = ("You can use this skill by asking something like: "
         "When is recycling day? ")
 EXCEPTION = ("Sorry, I ran into a problem. "
              "Please ask me again. ")
+RESPONSE_WITHOUT_ADDR = "The next {} day is {}"
+# RESPONSE_WITH_ADDR = 'The next {} day at <say-as interpret-as="address">{}</say-as> is {}'
+RESPONSE_DID_NOT_FIND = (
+    "Sorry, I couldn't find the next {} date at "
+    '<say-as interpret-as="address">{}</say-as>. '
+    "Check your device's location settings in the Amazon Alexa app.")
 
 # Location Consent permission to be shown on the card.
 PERMISSIONS = ["read::alexa:device:all:address"]
@@ -48,8 +54,8 @@ def get_collection_date_handler(handler_input):
             now = pendulum.today("America/Chicago").date()
             coll_date = sanitation.get_collection_date(
                 coll_type, addr.address_line1)
-            speech = 'The next {} day at <say-as interpret-as="address">{}</say-as> is {}'.format(
-                coll_type, addr.address_line1, convert_collection_date_to_speech(now, coll_date))
+            speech = RESPONSE_WITHOUT_ADDR.format(
+                coll_type, convert_collection_date_to_speech(now, coll_date))
             handler_input.response_builder.speak(
                 speech).set_should_end_session(True)
     except ServiceException as ex:
@@ -62,28 +68,12 @@ def get_collection_date_handler(handler_input):
         else:
             raise
     except (sanitation.UnknownCollectionDate, sanitation.AddrError):
-        response_builder.speak("Sorry, I couldn't find the next {} date at <say-as interpret-as=\"address\">{}</say-as>. Check your device's location settings in the Amazon Alexa app.".format(
+        response_builder.speak(RESPONSE_DID_NOT_FIND.format(
             coll_type, addr.address_line1
         )).set_should_end_session(True)
 
     return response_builder.response
 
-
-# class GetAddressExceptionHandler(AbstractExceptionHandler):
-#     # Custom Exception Handler for handling device address API call exceptions
-#     def can_handle(self, handler_input, exception):
-#         return isinstance(exception, ServiceException)
-
-#     def handle(self, handler_input, exception):
-#         if exception.status_code == 403:
-#             handler_input.response_builder.speak(
-#                 NOTIFY_MISSING_PERMISSIONS).set_card(
-#                 AskForPermissionsConsentCard(permissions=PERMISSIONS))
-#         else:
-#             handler_input.response_builder.speak(
-#                 LOCATION_FAILURE).ask(LOCATION_FAILURE)
-
-#         return handler_input.response_builder.response
 
 @sb.request_handler(is_request_type("SessionEndedRequest"))
 def session_ended_handle(handler_input):
