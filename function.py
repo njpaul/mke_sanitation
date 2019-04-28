@@ -10,20 +10,18 @@ import sanitation
 sb = CustomSkillBuilder(api_client=DefaultApiClient())
 
 WELCOME = ("Welcome to Milwaukee Sanitation. "
-           "Ask me when your garbage or recycling day is.")
+           "Ask me when your garbage or recycling day is. ")
 REPROMT = "Ask me when your garbage or recycling day is."
 NOTIFY_MISSING_PERMISSIONS = ("Please enable Location permissions in "
                               "the Amazon Alexa app.")
-NO_ADDRESS = ("It looks like you don't have an address set. "
-              "You can set your address from the Amazon Alexa app.")
-ADDRESS_AVAILABLE = "Here is your full address: {}, {}, {}"
-ERROR = "Uh Oh. Looks like something went wrong."
-LOCATION_FAILURE = ("There was an error with the Device Address API. "
-                    "Please try again.")
-FALLBACK = "Milwaukee Sanitation can't help with that. Ask me when your garbage or recycling day is."
+NO_ADDRESS = ("It looks like you don't have an address set on this device. "
+              "You can set your device address from the Amazon Alexa app. ")
+FALLBACK = ("Milwaukee Sanitation can't help with that. "
+            "Ask me when your garbage or recycling day is. ")
 HELP = ("You can use this skill by asking something like: "
         "When is recycling day? ")
-EXCEPTION = "Sorry, I ran into a problem. Please ask me again."
+EXCEPTION = ("Sorry, I ran into a problem. "
+             "Please ask me again. ")
 
 # Location Consent permission to be shown on the card.
 PERMISSIONS = ["read::alexa:device:all:address"]
