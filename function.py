@@ -1,7 +1,5 @@
 from ask_sdk_core.skill_builder import CustomSkillBuilder
 from ask_sdk_core.api_client import DefaultApiClient
-from ask_sdk_core.dispatch_components import AbstractRequestHandler
-from ask_sdk_core.dispatch_components import AbstractExceptionHandler
 from ask_sdk_core.utils import is_request_type, is_intent_name
 from ask_sdk_model.ui import AskForPermissionsConsentCard
 from ask_sdk_model.services import ServiceException
@@ -39,33 +37,38 @@ def launch_request_handler(handler_input):
 
 @sb.request_handler(is_intent_name("GetCollectionDate"))
 def get_collection_date_handler(handler_input):
-    req_envelope = handler_input.request_envelope
     response_builder = handler_input.response_builder
-    service_client_fact = handler_input.service_client_factory
-
-    if not (req_envelope.context.system.user.permissions and
-            req_envelope.context.system.user.permissions.consent_token):
-        response_builder.speak(NOTIFY_MISSING_PERMISSIONS)
-        response_builder.set_card(
-            AskForPermissionsConsentCard(permissions=PERMISSIONS))
-        return response_builder.response
+    addr_service = handler_input.service_client_factory.get_device_address_service()
 
     try:
-        device_id = req_envelope.context.system.device.device_id
-        device_addr_client = service_client_fact.get_device_address_service()
-        addr = device_addr_client.get_full_address(device_id)
-
-        if addr.address_line1 is None and addr.state_or_region is None:
+        device_id = get_device_id(handler_input)
+        addr = addr_service.get_full_address(device_id)
+        if not addr.address_line1:
             response_builder.speak(NO_ADDRESS)
         else:
-            response_builder.speak(ADDRESS_AVAILABLE.format(
-                addr.address_line1, addr.state_or_region, addr.postal_code))
-        return response_builder.response
-    except ServiceException:
-        response_builder.speak(ERROR)
-        return response_builder.response
-    except Exception as e:
-        raise e
+            coll_type = get_slot_value(handler_input, "collectionType")
+            now = pendulum.today("America/Chicago").date()
+            coll_date = sanitation.get_collection_date(
+                coll_type, addr.address_line1)
+            speech = 'The next {} day at <say-as interpret-as="address">{}</say-as> is {}'.format(
+                coll_type, addr.address_line1, convert_collection_date_to_speech(now, coll_date))
+            handler_input.response_builder.speak(
+                speech).set_should_end_session(True)
+    except ServiceException as ex:
+        if ex.status_code == 204:
+            response_builder.speak(NO_ADDRESS)
+        elif ex.status_code == 403:
+            response_builder.speak(NOTIFY_MISSING_PERMISSIONS)
+            response_builder.set_card(
+                AskForPermissionsConsentCard(permissions=PERMISSIONS))
+        else:
+            raise
+    except (sanitation.UnknownCollectionDate, sanitation.AddrError):
+        response_builder.speak("Sorry, I couldn't find the next {} date at {}. Check your device's location settings in the Amazon Alexa app.".format(
+            coll_type, addr.address_line1
+        )).set_should_end_session(True)
+
+    return response_builder.response
 
 
 # class GetAddressExceptionHandler(AbstractExceptionHandler):
@@ -110,7 +113,7 @@ def fallback_handler(handler_input):
 
 @sb.exception_handler(lambda handler_input, ex: True)
 def exception_handler(handler_input, ex):
-    print(ex)
+    print("Exception: {}".format(repr(ex)))
     handler_input.response_builder.speak(EXCEPTION).ask(EXCEPTION)
     return handler_input.response_builder.response
 
@@ -139,22 +142,6 @@ handler = sb.lambda_handler()
 #     handler_input.response_builder.speak(
 #         speech).set_should_end_session(True)
 #     return handler_input.response_builder.response
-
-
-# @sb.request_handler(is_intent_name("GetCollectionDate"))
-# def get_collection_date_handler(handler_input):
-#     device_id = get_device_id(handler_input)
-#     addr_service = handler_input.service_client_factory.get_device_address_service()
-#     try:
-#         coll_addr = addr_service.get_full_address(device_id)
-#         handler_input.response_builder.speak(coll_addr)
-#     except ServiceException as ex:
-#         return handler_input.response_builder.speak(str(ex)).set_should_end_session(True)
-
-#     coll_type = get_slot_value(handler_input, "collectionType")
-
-#     handler_input.set_should_end_session(True)
-#     return handler_input
 
 
 # Returns an SSML representation of the collection date, given the current

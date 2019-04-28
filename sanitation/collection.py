@@ -49,7 +49,6 @@ def get_collection_date(coll_type_str, addr_str):
         response_text = _make_request(addr_parts)
     except requests.exceptions.HTTPError as ex:
         raise CollectionResponseError from ex
-    print(response_text)
     if coll_type == CollectionType.GARBAGE:
         return _read_garbage_date(response_text)
     else:
