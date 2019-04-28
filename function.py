@@ -64,7 +64,7 @@ def get_collection_date_handler(handler_input):
         else:
             raise
     except (sanitation.UnknownCollectionDate, sanitation.AddrError):
-        response_builder.speak("Sorry, I couldn't find the next {} date at {}. Check your device's location settings in the Amazon Alexa app.".format(
+        response_builder.speak("Sorry, I couldn't find the next {} date at <say-as interpret-as=\"address\">{}</say-as>. Check your device's location settings in the Amazon Alexa app.".format(
             coll_type, addr.address_line1
         )).set_should_end_session(True)
 

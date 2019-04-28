@@ -53,6 +53,7 @@ class AddrSuffix:
         "park": PARK,
         "parkway": PARK,
         "place": PLACE,
+        "pl": PLACE,
         "road": ROAD,
         "square": SQUARE,
         "street": STREET,

@@ -139,6 +139,7 @@ class TestAddrParts(unittest.TestCase):
             ("1234 North Fake Park", AddrSuffix.PARK),
             ("1234 North Fake Parkway", AddrSuffix.PARK),
             ("1234 North Fake Place", AddrSuffix.PLACE),
+            ("1234 North Fake PL", AddrSuffix.PLACE),
             ("1234 North Fake Road", AddrSuffix.ROAD),
             ("1234 North Fake Square", AddrSuffix.SQUARE),
             ("1234 North Fake Street", AddrSuffix.STREET),
