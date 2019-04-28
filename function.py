@@ -15,7 +15,7 @@ REPROMT = "Ask me when your garbage or recycling day is."
 NOTIFY_MISSING_PERMISSIONS = ("Please enable Location permissions in "
                               "the Amazon Alexa app.")
 NO_ADDRESS = ("It looks like you don't have an address set. "
-              "You can set your address from the companion app.")
+              "You can set your address from the Amazon Alexa app.")
 ADDRESS_AVAILABLE = "Here is your full address: {}, {}, {}"
 ERROR = "Uh Oh. Looks like something went wrong."
 LOCATION_FAILURE = ("There was an error with the Device Address API. "
