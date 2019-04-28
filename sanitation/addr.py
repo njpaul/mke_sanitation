@@ -28,13 +28,14 @@ class AddrDir:
 
 
 class AddrSuffix:
+    # Milwaukee uses some non-standard suffixes so that they are all two letters
     AVE = "AV"
     BLVD = "BL"
     CIRCLE = "CR"
     COURT = "CT"
     DRIVE = "DR"
     LANE = "LN"
-    PARK = "PK"
+    PKWY = "PK"
     PLACE = "PL"
     ROAD = "RD"
     SQUARE = "SQ"
@@ -42,22 +43,34 @@ class AddrSuffix:
     TERRACE = "TR"
     WAY = "WA"
 
+    # The abbreviations here come from the "Suggested Address" that the
+    # Alexa app tries to correct. They are standard postal suffixes.
+    # The non-abbreviations are how you might say the address when speaking.
     _MAPPING = {
         "ave": AVE,
         "avenue": AVE,
         "boulevard": BLVD,
+        "blvd": BLVD,
         "circle": CIRCLE,
+        "cir": CIRCLE,
         "court": COURT,
+        "ct": COURT,
         "drive": DRIVE,
+        "dr": DRIVE,
         "lane": LANE,
-        "park": PARK,
-        "parkway": PARK,
+        "ln": LANE,
+        "parkway": PKWY,
+        "pkwy": PKWY,
         "place": PLACE,
         "pl": PLACE,
         "road": ROAD,
+        "rd": ROAD,
         "square": SQUARE,
+        "sq": SQUARE,
         "street": STREET,
+        "st": STREET,
         "terrace": TERRACE,
+        "ter": TERRACE,
         "way": WAY
     }
 
