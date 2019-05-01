@@ -109,29 +109,6 @@ def exception_handler(handler_input, ex):
 handler = sb.lambda_handler()
 
 
-# @sb.request_handler(is_intent_name("GetCollectionDateAtAddress"))
-# def get_collection_date_at_address_handler(handler_input):
-#     coll_type = get_slot_value(handler_input, "collectionType")
-#     coll_addr = get_slot_value(handler_input, "collectionAddress")
-
-#     print(coll_addr)
-
-#     # TODO: Handle exceptions with additional dialog. For now, let the
-#     # exception handler do the work.
-#     # TODO: Find a way to test the timezone here because this issue was
-#     # suspected and then confirmed through a manual test.
-#     # TODO: While we know the timezone is Central, we don't want the UI
-#     # to know that. Move this knowledge elsewhere.
-#     now = pendulum.today("America/Chicago").date()
-#     print(now)
-#     coll_date = sanitation.get_collection_date(coll_type, coll_addr)
-#     speech = 'The next {} day at <say-as interpret-as="address">{}</say-as> is {}'.format(
-#         coll_type, coll_addr, convert_collection_date_to_speech(now, coll_date))
-#     handler_input.response_builder.speak(
-#         speech).set_should_end_session(True)
-#     return handler_input.response_builder.response
-
-
 # Returns an SSML representation of the collection date, given the current
 # date and the collection date. If the date is less than 7 days away and
 # within the same month, just speak the day. If the date is at least 7 days
