@@ -1,0 +1,63 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "milwaukee sanitation",
+            "intents": [
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "GetCollectionDate",
+                    "slots": [
+                        {
+                            "name": "collectionType",
+                            "type": "CollectionType"
+                        }
+                    ],
+                    "samples": [
+                        "When is {collectionType} day",
+                        "When is the next {collectionType} day",
+                        "What date is {collectionType} day",
+                        "What date is the next {collectionType} day",
+                        "When is the next time {collectionType} will be collected",
+                        "What day is {collectionType} collected"
+                    ]
+                }
+            ],
+            "types": [
+                {
+                    "name": "CollectionType",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "recycling"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "garbage"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
