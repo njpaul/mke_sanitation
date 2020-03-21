@@ -56,7 +56,7 @@ def get_collection_date(coll_type_str, addr_str):
 
 
 def _make_request(addr):
-    URL = "https://itmdapps.milwaukee.gov/DPWServletsPublic/garbage_day"
+    URL = "https://itmdapps.milwaukee.gov/DpwServletsPublic/garbage_day"
     PARAMS = {"embed": "Y"}
     data = {
         "laddr": addr.st_num,
